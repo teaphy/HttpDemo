@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="com.teaphy.okhttptest.AtyOkHttpForLoad">
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/sb_upload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <TextView
+        android:id="@+id/tv_upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1/100"/>
+
+    <Button
+        android:id="@+id/btnUpload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="图片上传"/>
+
+    <SeekBar
+        android:id="@+id/sb_download"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1/100"/>
+
+    <Button
+        android:id="@+id/btnDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="图片下载"/>
+
+    <ImageView
+        android:id="@+id/iv_download"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
