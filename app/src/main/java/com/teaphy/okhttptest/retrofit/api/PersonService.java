@@ -1,6 +1,7 @@
-package com.teaphy.okhttptest.retrofit;
+package com.teaphy.okhttptest.retrofit.api;
 
-import com.teaphy.okhttptest.http.HttpConstant;
+import com.teaphy.okhttptest.urlConstant.HttpConstant;
+import com.teaphy.okhttptest.request.ProgressRequestBody;
 import com.teaphy.okhttptest.retrofit.bean.Person;
 import com.teaphy.okhttptest.retrofit.bean.ResultInfo;
 import com.teaphy.okhttptest.retrofit.bean.Score;
@@ -21,7 +22,6 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 import retrofit2.http.Url;
 import rx.Observable;
 
@@ -50,6 +50,10 @@ public interface PersonService {
     @Multipart
     @POST(HttpConstant.ACTION_UPLOAD_FILE)
     Observable<ResultInfo<String>> uploadFile(@Part MultipartBody.Part part, @Part("name") String name);
+
+    @Multipart
+    @POST(HttpConstant.ACTION_UPLOAD_ANY_FILES)
+    Observable<ResultInfo<String>> uploadAnyFiles(@Part() List<MultipartBody.Part> parts, @Part("name") String name);
 
     //下载文件
     @GET

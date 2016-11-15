@@ -20,6 +20,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--Image Selector Entry-->
+        <activity
+            android:configChanges="orientation|screenSize"
+            android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity" />
+
         <activity android:name=".AtyOkHttpForLoad" />
         <activity android:name=".AtyOkHttp" />
         <activity android:name=".retrofit.AtyRetrofit" />

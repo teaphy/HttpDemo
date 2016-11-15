@@ -48,6 +48,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="文件相关"/>
+
+        <Button
+            android:id="@+id/btn_loadAnyFiles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="多文件相关"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
 

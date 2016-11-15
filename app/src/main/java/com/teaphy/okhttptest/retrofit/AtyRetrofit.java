@@ -9,7 +9,8 @@ import android.widget.Button;
 
 import com.orhanobut.logger.Logger;
 import com.teaphy.okhttptest.R;
-import com.teaphy.okhttptest.http.HttpConstant;
+import com.teaphy.okhttptest.urlConstant.HttpConstant;
+import com.teaphy.okhttptest.retrofit.api.PersonService;
 import com.teaphy.okhttptest.retrofit.bean.Person;
 import com.teaphy.okhttptest.retrofit.bean.ResultInfo;
 import com.teaphy.okhttptest.retrofit.bean.Score;
@@ -50,6 +51,8 @@ public class AtyRetrofit extends AppCompatActivity {
     Button btnGetRxJava;
     @BindView(R.id.btn_loadFile)
     Button btnLoadFile;
+    @BindView(R.id.btn_loadAnyFiles)
+    Button btnLoadAnyFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +62,8 @@ public class AtyRetrofit extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.btn_get, R.id.btn_getForRestful, R.id.btn_post, R.id.btn_postWithBody, R.id.btn_getRxJava, R.id.btn_loadFile})
+    @OnClick({R.id.btn_get, R.id.btn_getForRestful, R.id.btn_post, R.id.btn_postWithBody,
+            R.id.btn_getRxJava, R.id.btn_loadFile, R.id.btn_loadAnyFiles})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_get:
@@ -80,6 +84,10 @@ public class AtyRetrofit extends AppCompatActivity {
             case R.id.btn_loadFile:
                 Intent intent = new Intent(this, AtyRetrofitForFile.class);
                 startActivity(intent);
+                break;
+            case R.id.btn_loadAnyFiles:
+                Intent intentAnyFiles = new Intent(this, AtyRetrofitForAnyFiles.class);
+                startActivity(intentAnyFiles);
                 break;
             default:
                 break;
