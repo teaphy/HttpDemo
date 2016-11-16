@@ -20,7 +20,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
 import rx.Observable;
@@ -52,8 +51,8 @@ public interface PersonService {
     Observable<ResultInfo<String>> uploadFile(@Part MultipartBody.Part part, @Part("name") String name);
 
     @Multipart
-    @POST(HttpConstant.ACTION_UPLOAD_ANY_FILES)
-    Observable<ResultInfo<String>> uploadAnyFiles(@Part() List<MultipartBody.Part> parts, @Part("name") String name);
+    @POST(HttpConstant.ACTION_UPLOAD_FILE)
+    Observable<ResultInfo<String>> uploadAnyFiles(@Part List<MultipartBody.Part> parts, @Part("name") String name);
 
     //下载文件
     @GET

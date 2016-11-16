@@ -7,7 +7,8 @@ package com.teaphy.okhttptest.urlConstant;
 public class HttpConstant {
     //public static final String BASE_URL = "http://172.27.35.1:8080/teaphy/";
     //public static final String BASE_URL = "http://192.168.1.103:8080/teaphy/";
-    public static final String BASE_URL = "http://192.168.1.104:8080/teaphy/";
+//    public static final String BASE_URL = "http://192.168.1.104:8080/teaphy/";
+    public static final String BASE_URL = "http://192.168.137.1:8080/";
 
     public static final String ACTION_REGISTER = "operatePerson/register";
 

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -22,7 +21,7 @@ import com.teaphy.okhttptest.retrofit.bean.ResultInfo;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -71,6 +69,11 @@ public class AtyRetrofitForAnyFiles extends AppCompatActivity {
     List<String> mLists;
     ProgressRequestBody proBody;
     List<MultipartBody.Part> mParts;
+
+    Map<String, RequestBody> mBodys = new HashMap<>();
+    MultipartBody mMultipartBody;
+
+    int cout = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +119,7 @@ public class AtyRetrofitForAnyFiles extends AppCompatActivity {
                 selectImages();
                 break;
             case R.id.btn_submit:
-                configImagesRequestBody();
+                uploadAnyFiles();
                 break;
         }
     }
@@ -134,33 +137,26 @@ public class AtyRetrofitForAnyFiles extends AppCompatActivity {
     }
 
     /**
-     * 上传多张照片
+     * @Desc 上传多张照片
+     * @Author Tiany
+     * @Time 2016/11/16
      */
-    private void  uploadAnyFiles() {
-
-        Logger.d("uploadAnyFiles");
+    private void uploadAnyFiles() {
+        List<MultipartBody.Part> lists = filesToMultipartBodyParts(mLists);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpConstant.BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create()) //添加Rxjava
                 .addConverterFactory(GsonConverterFactory.create()) //
                 .build();
-
-//        ProgressRequestBody fileBodys =
-        if (null == proBody) {
-            Log.d("AtyRetrofitForAnyFiles", "flieBodys is NULL");
-            return;
-        }
-
-
-
         PersonService personService = retrofit.create(PersonService.class);
-        Observable<ResultInfo<String>> observable = personService.uploadAnyFiles(mParts, "张三");
+
+        Observable<ResultInfo<String>> observable = personService.uploadAnyFiles(lists, "张三");
         observable.subscribeOn(Schedulers.newThread())
                 .subscribe(new Observer<ResultInfo<String>>() {
                     @Override
                     public void onCompleted() {
-
+                        Logger.e("uploadAnyFiles - onCompleted");
                     }
 
                     @Override
@@ -175,54 +171,31 @@ public class AtyRetrofitForAnyFiles extends AppCompatActivity {
                 });
     }
 
-    private ProgressRequestBody configImagesRequestBody() {
-        MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
-        Logger.d("configImagesRequestBody");
+    public  List<MultipartBody.Part> filesToMultipartBodyParts(List<String> filePath) {
+        List<MultipartBody.Part> parts = new ArrayList<>(filePath.size());
+        int count = 1;
+        for (String path : filePath) {
+            File file = new File(path);
+            //
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"), file);
 
-        Observable.from(mLists)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
-//                        MultipartBody multipartBody = multipartBuilder.build();
-                        Logger.d("上传图片");
-                        uploadAnyFiles();
-                    }
+            ProgressRequestBody proBody = new ProgressRequestBody(requestBody, progress -> Observable.just(progress)
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe(pro -> {
+                        if (progress % 5 == 0) {
+                            sbUpload.setProgress(pro);
+                        } else if (progress == 99) {
+                            sbUpload.setProgress(100);
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Logger.d(e.getMessage());
-                    }
+                        tvUpload.setText(pro + "/100");
+                    }));
 
-                    @Override
-                    public void onNext(String path) {
-                        File file = new File(path);
-                        long time = System.currentTimeMillis();
-                        RequestBody body = RequestBody.create(MEDIA_TYPE_PNG, file);
+            MultipartBody.Part part = MultipartBody.Part.createFormData("file"+count, file.getName(), proBody);
+            parts.add(part);
 
-                        ProgressRequestBody proBody = new ProgressRequestBody(body, progress -> {
-                            Observable.just(progress)
-                                    .subscribeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(pro -> {
-                                        if (progress % 5 == 0) {
-                                            sbUpload.setProgress(pro);
-                                        } else if (progress == 99) {
-                                            sbUpload.setProgress(100);
-                                        }
-
-                                        tvUpload.setText(pro + "/100");
-                                    });
-
-                        });
-
-                        MultipartBody.Part part = MultipartBody.Part.createFormData("upfile", time + ".png", proBody);
-//                        multipartBuilder.addPart(part);
-                        mParts.add(part);
-                    }
-                });
-
-
-        return proBody;
+            count++;
+        }
+        return parts;
     }
 }
