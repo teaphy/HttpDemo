@@ -14,7 +14,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.Platform;
+//import okhttp3.internal.Platform;
 import okio.Buffer;
 
 /**

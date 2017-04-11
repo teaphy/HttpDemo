@@ -28,18 +28,19 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import me.nereo.multi_image_selector.MultiImageSelector;
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class AtyRetrofitForAnyFiles extends AppCompatActivity {
 
@@ -146,7 +147,7 @@ public class AtyRetrofitForAnyFiles extends AppCompatActivity {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(HttpConstant.BASE_URL)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create()) //添加Rxjava
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) //添加Rxjava
                 .addConverterFactory(GsonConverterFactory.create()) //
                 .build();
         PersonService personService = retrofit.create(PersonService.class);
@@ -155,8 +156,13 @@ public class AtyRetrofitForAnyFiles extends AppCompatActivity {
         observable.subscribeOn(Schedulers.newThread())
                 .subscribe(new Observer<ResultInfo<String>>() {
                     @Override
-                    public void onCompleted() {
-                        Logger.e("uploadAnyFiles - onCompleted");
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(ResultInfo<String> stringResultInfo) {
+                        Logger.d(stringResultInfo.toString());
                     }
 
                     @Override
@@ -165,10 +171,11 @@ public class AtyRetrofitForAnyFiles extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(ResultInfo<String> stringResultInfo) {
-                        Logger.d(stringResultInfo.toString());
+                    public void onComplete() {
+                        Logger.e("uploadAnyFiles - onCompleted");
                     }
                 });
+
     }
 
     public  List<MultipartBody.Part> filesToMultipartBodyParts(List<String> filePath) {

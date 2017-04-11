@@ -8,7 +8,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.JsonObject;
-import com.jakewharton.rxbinding.view.RxView;
+
+import com.jakewharton.rxbinding2.view.RxView;
 import com.teaphy.okhttptest.urlConstant.HttpConstant;
 import com.teaphy.okhttptest.util.LogUtil;
 
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -25,8 +28,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class AtyOkHttp extends AppCompatActivity {
 

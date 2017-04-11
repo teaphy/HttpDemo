@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <paths>
+        <!-- 如果你将path设为path="pictures"，那么它代表着根目录下的pictures目录(eg:/storage/emulated/0/pictures) -->
+        <!-- path="" 代表根目录，也就是说你可以向其它的应用共享根目录及其子目录下任何一个文件了 -->
+        <!-- 代表的根目录： Context.getFilesDir() -->
+        <!-- 代表的根目录: Environment.getExternalStorageDirectory() -->
+        <!-- 代表的根目录: getCacheDir() -->
+        <external-path path=""  name="download"/>
+    </paths>
+</resources>
