@@ -9,6 +9,7 @@ import com.teaphy.okhttptest.retrofit.bean.Score;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -56,5 +57,5 @@ public interface PersonService {
 
     //下载文件
     @GET
-    Observable<ResponseBody> downloadPicFromNet(@Url String fileUrl);
+    Flowable<ResponseBody> downloadPicFromNet(@Url String fileUrl);
 }

@@ -29,17 +29,26 @@ import com.teaphy.okhttptest.retrofit.bean.ResultInfo;
 import com.teaphy.okhttptest.retrofit.interceptor.HttpLoggingInterceptor;
 import com.teaphy.okhttptest.util.LogUtil;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.io.File;
 import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.DisposableSubscriber;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -261,7 +270,7 @@ public class AtyRetrofitForFile extends AppCompatActivity {
 //                .addConverterFactory(GsonConverterFactory.create()) //
 //                .client(client)
 //                .build();
-		PersonService personService = RetrofitDownFactory
+		RetrofitDownFactory
 				.newInstance()
 				.createDownRetrofit(BASE_URL, new ProgressResponseBody.ProgressResponseListener() {
 					@Override
@@ -281,41 +290,41 @@ public class AtyRetrofitForFile extends AppCompatActivity {
 								});
 					}
 				})
-				.create(PersonService.class);
-		Observable<ResponseBody> observable = personService.downloadPicFromNet(url);
-
-		observable.subscribeOn(Schedulers.newThread())
-				.subscribe(new Observer<ResponseBody>() {
-					@Override
-					public void onSubscribe(Disposable d) {
-
-					}
-
+				.create(PersonService.class)
+				.downloadPicFromNet(url)
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new DisposableSubscriber<ResponseBody>() {
 					@Override
 					public void onNext(ResponseBody responseBody) {
 						try {
-//                    InputStream inputStream = response.body().byteStream();
-//                    BufferedSource source =       Okio.buffer(Okio.source(inputStream));
-							boolean newFile = false;
-							File foder = new File(SAVE_REAL_PATH);
-							if (!foder.exists()) {
-								foder.mkdirs();
-							}
+							Flowable.just(responseBody.bytes())
+									.subscribeOn(Schedulers.io())
+									.observeOn(AndroidSchedulers.mainThread())
+									.doOnComplete(() -> install())
+									.subscribe(bytes -> {
+										boolean newFile = false;
+										File foder = new File(SAVE_REAL_PATH);
+										if (!foder.exists()) {
+											foder.mkdirs();
+										}
 
-							File myCaptureFile = new File(foder, "myApp.apk");
-							if (!myCaptureFile.exists()) {
-								newFile = myCaptureFile.createNewFile();
-							}
+										File myCaptureFile = new File(foder, "myApp.apk");
+										if (!myCaptureFile.exists()) {
+											newFile = myCaptureFile.createNewFile();
+										}
 
-							if (newFile) {
-								BufferedSink sink = Okio.buffer(Okio.sink(myCaptureFile));
-								sink.write(responseBody.bytes());
-								sink.flush();
-								sink.close();
-								install();
-							}
-						} catch (IOException ignored) {
-							LogUtil.i("IOException : " + ignored.getMessage());
+										if (newFile) {
+											BufferedSink sink = Okio.buffer(Okio.sink(myCaptureFile));
+											sink.write(responseBody.bytes());
+											sink.flush();
+											sink.close();
+											LogUtil.i("sink.close() ");
+
+										}
+									});
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 					}
 
@@ -326,9 +335,93 @@ public class AtyRetrofitForFile extends AppCompatActivity {
 
 					@Override
 					public void onComplete() {
-
 					}
 				});
+//				.flatMap(new Function<ResponseBody, Flowable<File>>() {
+//					@Override
+//					public Flowable<File> apply(@NonNull ResponseBody responseBody) throws Exception {
+//						File myCaptureFile;
+//						try {
+////                    InputStream inputStream = response.body().byteStream();
+////                    BufferedSource source =       Okio.buffer(Okio.source(inputStream));
+//							boolean newFile = false;
+//							File foder = new File(SAVE_REAL_PATH);
+//							if (!foder.exists()) {
+//								foder.mkdirs();
+//							}
+//
+//							myCaptureFile = new File(foder, "myApp.apk");
+//							if (!myCaptureFile.exists()) {
+//								newFile = myCaptureFile.createNewFile();
+//							}
+//
+//							if (newFile) {
+//								BufferedSink sink = Okio.buffer(Okio.sink(myCaptureFile));
+//								sink.write(responseBody.bytes());
+//								sink.flush();
+//								sink.close();
+//							}
+//						} catch (IOException ignored) {
+//							LogUtil.i("IOException : " + ignored.getMessage());
+//							return Flowable.empty();
+//						}
+//						return Flowable.just(myCaptureFile);
+//					}
+//				})
+//
+//				.observeOn(AndroidSchedulers.mainThread())
+//				.subscribe(new Consumer<File>() {
+//					@Override
+//					public void accept(@NonNull File file) throws Exception {
+//						install();
+//					}
+//				});
+
+//		observable.subscribeOn(Schedulers.newThread())
+//				.subscribe(new Observer<ResponseBody>() {
+//					@Override
+//					public void onSubscribe(Disposable d) {
+//
+//					}
+//
+//					@Override
+//					public void onNext(ResponseBody responseBody) {
+//						try {
+////                    InputStream inputStream = response.body().byteStream();
+////                    BufferedSource source =       Okio.buffer(Okio.source(inputStream));
+//							boolean newFile = false;
+//							File foder = new File(SAVE_REAL_PATH);
+//							if (!foder.exists()) {
+//								foder.mkdirs();
+//							}
+//
+//							File myCaptureFile = new File(foder, "myApp.apk");
+//							if (!myCaptureFile.exists()) {
+//								newFile = myCaptureFile.createNewFile();
+//							}
+//
+//							if (newFile) {
+//								BufferedSink sink = Okio.buffer(Okio.sink(myCaptureFile));
+//								sink.write(responseBody.bytes());
+//								sink.flush();
+//								sink.close();
+//								install();
+//							}
+//						} catch (IOException ignored) {
+//							LogUtil.i("IOException : " + ignored.getMessage());
+//						}
+//					}
+//
+//					@Override
+//					public void onError(Throwable e) {
+//						LogUtil.i("onError : " + e.getMessage());
+//					}
+//
+//					@Override
+//					public void onComplete() {
+//
+//					}
+//				});
 	}
 
 	/**
